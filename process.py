@@ -1,53 +1,82 @@
-import cgi
-import random
+import sys
 import math
+import random
 
-# フォームデータを取得
-form = cgi.FieldStorage()
-user_number = int(form.getvalue("user_number"))
-user_text = form.getvalue("user_text")
 
-# 数字の処理
-if user_number % 2 == 0:
-    number_result = f"The number {user_number} is even. Its square root is {math.sqrt(user_number):.2f}."
-else:
-    number_result = f"The number {user_number} is odd. Its cube is {user_number ** 3}."
-
-# テキストの処理
-binary_text = ' '.join(format(ord(char), '08b') for char in user_text)
-vowel_count = sum(1 for char in user_text.lower() if char in "aeiou")
-
-text_result = f"Binary: {binary_text}<br>Vowel Count: {vowel_count}"
-
-# トレジャーハント
-secret_number = random.randint(1, 100)
-attempts = []
-for i in range(5):
-    guess = random.randint(1, 100)  # シミュレーションのためランダム
-    if guess == secret_number:
-        attempts.append(f"Attempt {i+1}: {guess} (Correct!)")
-        break
-    elif guess > secret_number:
-        attempts.append(f"Attempt {i+1}: {guess} (Too high!)")
+def trasurenumber_puzzle(number):
+    
+    if number % 2 == 0:
+        
+        return ['even',f"sqrt is {math.sqrt(number)}"]
     else:
-        attempts.append(f"Attempt {i+1}: {guess} (Too low!)")
+        
+        return ['odd',f"cube is {number ** 3}"]
 
-treasure_result = "<br>".join(attempts)
-if secret_number in [int(a.split()[1]) for a in attempts]:
-    treasure_result += "<br>You found the treasure!"
-else:
-    treasure_result += "<br>You did not find the treasure."
+def text_puzzle(text):
+    
+    binary_list = []
+    for char in text:
+        ascii_code = ord(char)
+        binary = format(ascii_code, '08b')
+        binary_list.append(binary)
+    binary_text = ' '.join(binary_list)
 
-# 結果を出力（PHPへ返す）
-print("Content-type: text/html\n")
-print(f"""
-<html>
-<head><title>Results</title></head>
-<body>
-<h2>Results</h2>
-<p>{number_result}</p>
-<p>{text_result}</p>
-<p>{treasure_result}</p>
-</body>
-</html>
-""")
+    
+    vowels = "aeiouAEIOU"
+    vowel_count = 0
+    for char in text:
+        if char in vowels:
+            vowel_count += 1
+
+    return [binary_text, vowel_count]
+
+def treasurehunter_hunt():
+    attempts = 5
+    attempt_count = 0
+    
+    target = random.randint(1, 100)
+    html_output = f"<p>- The secret number is {target}.</p>"
+    
+
+    while attempt_count < attempts:
+        guess = random.randint(1, 100)
+        attempt_count += 1
+        if guess == target:
+            html_output += f"""
+            <p>-Attempt {attempt_count}: {guess} (Correct!)</p>
+            <p>You found the treasure in {attempt_count} attempts!</p>"""
+            return html_output
+        else:
+            if guess > target:
+                html_output += f"<p>-Attempt {attempt_count}: {guess} (Too high!)</p>"
+            else:
+                html_output += f"<p>-Attempt {attempt_count}: {guess} (Too low!)</p>"
+    return html_output
+
+if __name__ == "__main__":
+    number = int(sys.argv[1])
+    text = sys.argv[2]
+    
+    oddOrEven,number_result = trasurenumber_puzzle(number)
+    binary,vowel = text_puzzle(text)
+    treasure_result = treasurehunter_hunt()
+
+    html_output = f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Calculation Results</title>
+    </head>
+    <body>
+    <h2>Number Puzzle:</h2>
+    <p>- The number {number} is {oddOrEven}. Its {number_result}.</p>
+    <h2>Text Puzzle:</h2>
+    <p>- Binary: {binary}</p>
+    <p>- Vowel Count: {vowel}</p>
+    <h2>Treasure Hunt:</h2>
+    {treasure_result}
+    </body>
+    </html>
+    """
+    print(f"{html_output}")

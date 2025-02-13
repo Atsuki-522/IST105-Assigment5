@@ -1,18 +1,23 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Interactive Treasure Hunt</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Input Form</title>
 </head>
 <body>
-    <h2>Welcome to the Interactive Treasure Hunt!</h2>
+    <h2>Welcome to the Interactive Treasure Hunt</h2>
+    <h2>Enter your details to solve the puzzle and find the treasures</h2>
     <form action="process.php" method="POST">
-        <label>Enter a Number (e.g., birth year):</label>
-        <input type="number" name="user_number" required><br><br>
-        
-        <label>Enter a Text Message (e.g., name or secret word):</label>
-        <input type="text" name="user_text" required><br><br>
-        
-        <input type="submit" value="Solve the Puzzle">
+        <div>
+            <label for="number">Enter a Number(e.g., birth year):</label>
+            <input type="number" id="number" name="number" required/>
+        </div>
+        <div>
+            <label for="text">Enter a Text(e.g., name or secret word):</label>
+            <input type="text" id="text" name="text" required/>
+        </div>
+        <button type="submit">Solve the Puzzle!</button>
     </form>
 </body>
 </html>
